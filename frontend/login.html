@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ingresar · Reventa</title>
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/styles.css?v=3">
+  <script src="js/api.js?v=3" defer></script>
+  <script src="js/login.js?v=3" defer></script>
+</head>
+<body class="login-body">
+  <main class="login-card">
+    <h1 class="h3">Reventa</h1>
+    <p class="text-secondary mb-4">Gestión de productos, pedidos y pagos.</p>
+    <div id="message" class="alert alert-danger" role="alert" hidden></div>
+    <form id="login-form">
+      <label class="form-label" for="correo">Correo electrónico</label>
+      <input id="correo" class="form-control mb-3" type="email" maxlength="120" autocomplete="username" required>
+      <label class="form-label" for="contrasena">Contraseña</label>
+      <input id="contrasena" class="form-control mb-4" type="password" maxlength="128" autocomplete="current-password" required>
+      <button class="btn btn-primary w-100">Ingresar</button>
+    </form>
+    <p class="small text-secondary mt-4 mb-0">Solicita tu cuenta al administrador.</p>
+  </main>
+</body>
+</html>

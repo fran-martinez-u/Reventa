@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reventa</title>
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/styles.css?v=3">
+  <script src="js/api.js?v=3" defer></script>
+  <script src="js/modulos.js?v=4" defer></script>
+  <script src="js/vistas.js?v=4" defer></script>
+  <script src="js/formularios.js?v=4" defer></script>
+  <script src="js/app.js?v=4" defer></script>
+</head>
+<body>
+  <header class="app-header">
+    <a class="brand" href="#dashboard">Reventa</a>
+    <div class="d-flex align-items-center gap-3"><span id="user-label"></span><button id="logout" class="btn btn-sm btn-outline-secondary">Salir</button></div>
+  </header>
+  <nav id="navigation" class="app-nav" aria-label="Menú principal"></nav>
+  <main class="container-xl py-4">
+    <div id="message" role="status" class="alert" hidden></div>
+    <div id="view" aria-live="polite"><p>Cargando…</p></div>
+  </main>
+  <footer class="container-xl py-3 text-secondary small">Proyecto integrador · Gestión para revendedores</footer>
+  <dialog id="editor" aria-labelledby="editor-title">
+    <form id="edit-form">
+      <div class="d-flex justify-content-between align-items-center mb-3"><h2 id="editor-title" class="h5 m-0"></h2><button type="button" class="btn-close" id="close-editor" aria-label="Cerrar"></button></div>
+      <div id="form-error" class="alert alert-danger" role="alert" hidden></div>
+      <div id="fields" class="row g-3"></div>
+      <div class="d-flex justify-content-end gap-2 mt-4"><button type="button" class="btn btn-light" id="cancel-editor">Cancelar</button><button id="save-button" class="btn btn-primary">Guardar</button></div>
+    </form>
+  </dialog>
+</body>
+</html>

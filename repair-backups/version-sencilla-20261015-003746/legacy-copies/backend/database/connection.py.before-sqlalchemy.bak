@@ -1,0 +1,81 @@
+﻿import re
+import psycopg2
+from contextlib import contextmanager
+
+DATABASE_URL = "postgresql://neondb_owner:npg_YRVq15IiSTDn@ep-icy-butterfly-b5elmp3c-pooler.c-7.us-east-2.aws.neon.tech/neondb?sslmode=require"
+
+class PgCursorWrapper:
+    def __init__(self, cursor):
+        self._cursor = cursor
+
+    def _translate_sql(self, sql: str, params=None):
+        s = sql
+        s = re.sub(r"NVL\s*\(", "COALESCE(", s, flags=re.IGNORECASE)
+        s = re.sub(r"\bSYSDATE\b", "CURRENT_TIMESTAMP", s, flags=re.IGNORECASE)
+        s = re.sub(r"\bSYSTIMESTAMP\b", "CURRENT_TIMESTAMP", s, flags=re.IGNORECASE)
+        s = re.sub(r"\s+FROM\s+DUAL\b", "", s, flags=re.IGNORECASE)
+        s = re.sub(r"TO_CHAR\s*\(\s*([^,]+?)\s*,\s*'YYYY-MM-DD\"T\"HH24:MI:SS'\s*\)", r"TO_CHAR(\1, 'YYYY-MM-DD\"T\"HH24:MI:SS')", s, flags=re.IGNORECASE)
+        s = re.sub(r"FETCH\s+FIRST\s+(\d+)\s+ROWS\s+ONLY", r"LIMIT \1", s, flags=re.IGNORECASE)
+
+        if isinstance(params, dict):
+            s = re.sub(r":([a-zA-Z_][a-zA-Z0-9_]*)", r"%(\1)s", s)
+        return s, params
+
+    def execute(self, sql: str, params=None):
+        s, p = self._translate_sql(sql, params)
+        return self._cursor.execute(s, p)
+
+    def fetchone(self):
+        return self._cursor.fetchone()
+
+    def fetchall(self):
+        return self._cursor.fetchall()
+
+    @property
+    def description(self):
+        return self._cursor.description
+
+    @property
+    def rowcount(self):
+        return self._cursor.rowcount
+
+    def var(self, *args, **kwargs):
+        return None
+
+    def close(self):
+        return self._cursor.close()
+
+class PgConnectionWrapper:
+    def __init__(self, conn):
+        self._conn = conn
+
+    def cursor(self):
+        return PgCursorWrapper(self._conn.cursor())
+
+    def commit(self):
+        return self._conn.commit()
+
+    def rollback(self):
+        return self._conn.rollback()
+
+    def close(self):
+        return self._conn.close()
+
+@contextmanager
+def get_connection():
+    raw_conn = psycopg2.connect(DATABASE_URL)
+    conn = PgConnectionWrapper(raw_conn)
+    try:
+        yield conn
+    finally:
+        conn.close()
+
+def check_database_health():
+    try:
+        with get_connection() as conn:
+            cur = conn.cursor()
+            cur.execute("SELECT 1")
+            cur.fetchone()
+        return {"status": "ok", "motor": "PostgreSQL (Neon)", "mode": "cloud"}
+    except Exception as exc:
+        return {"status": "error", "detail": str(exc)}
